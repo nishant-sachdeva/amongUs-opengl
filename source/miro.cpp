@@ -30,14 +30,14 @@ static bool work = true;			// making maze(true) or pause(false)
 static int state = 0;		// current state(making maze, finding path or end)
 
 static PathFinder* gb_finder = NULL;	// path finder object
-static PathFinder* vapor_button = NULL;	// path finder object
 // static PathFinder* coins = NULL;	// path finder object // we need an array of these, but I dunno how to make that happen
-using namespace std;
-std::vector<Coin*> coins;
+// using namespace std;
+// std::vector<Coin*> coins;
 
 static PathFinder* fire = NULL;	// path finder object // we need an array of these too, but I dunno how to make that happen
 
 static PathFinder* enemy = NULL;	// path finder object  // just one is enough. For now, draw it up. movement, we can see later 
+static vaporise* vap = NULL;
 
 static bool Over_view = true;
 static bool autoMode = false;
@@ -320,6 +320,17 @@ void display()
 		enemy->Draw();	
 	}
 
+	if(vap != NULL)
+	{
+		const double SHIFTFACTOR_X = -10.0;
+		const double SHIFTFACTOR_Y = -11.5;
+
+		glLoadIdentity();
+		glTranslatef(vap->CurrentX() + SHIFTFACTOR_X, vap->CurrentY() + SHIFTFACTOR_Y, 0);
+		glScalef(0.1, 0.1, 1);
+		vap->Draw();		
+	}
+
 	// // drawing coins
 	// for ( int i = 0 ; i<5 ; i++)
 	// {
@@ -358,6 +369,8 @@ void path_finding()
 	static PathFinder finder(::starting_x, ::starting_y, ::width, ::height, false);
 	static PathFinder enemy_body(::starting_x-1, ::starting_y-3, ::width, ::height, false);
 
+	static vaporise vap_button(width/2, height/2, ::width, ::height, false);
+
 	// now spawn 5 coins
 
 	// for (int i = 0 ; i<5 ; i++){
@@ -377,6 +390,10 @@ void path_finding()
 	if (gb_finder == NULL) {
 		gb_finder = &finder;	// to use in other functions
 		finder.SetBodyColor(1.0-R, 1.0-G, 1.0-B);
+	}
+	if (vap == NULL) {
+		vap = &vap_button;	// to use in other functions
+		vap_button.SetBodyColor(1.0, 0,0);
 	}
 
 	if(enemy == NULL){
