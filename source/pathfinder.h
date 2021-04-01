@@ -2,8 +2,7 @@
 #define __AnoPi_PATHFINDER_H__
 
 #define Body 4
-#define Arm  1
-#define Leg  2
+
 #define Eye  3
 
 #define ROLL_FACT	10
@@ -11,7 +10,7 @@
 class PathFinder {
 public:
 	enum Direction { UP = 0, DOWN = 1, RIGHT = 2, LEFT = 3 };
-	PathFinder(int x_position, int y_position, int maze_width, int maze_height);
+	PathFinder(int x_position, int y_position, int maze_width, int maze_height, bool is_auto);
 	~PathFinder() { delete recursion_stack; }
 
 	bool isMoving() { return ismoving; }	// is it doing moving animation?
@@ -20,6 +19,10 @@ public:
 	void SetBodyColor(double r, double g, double b)	{ bodyColorR = r; bodyColorG = g, bodyColorB = b; }
 	void Draw();
 	void UpdateStatus();
+
+	int life = 100;
+
+	bool auto_mode;
 	// if animation is false, it doesn't move arm, leg and eye. Just draw
 	// if get_goal is true then do goal ceremony
 

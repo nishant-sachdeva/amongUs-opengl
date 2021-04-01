@@ -18,12 +18,14 @@ void PathFinder::set_dest( Direction new_dest ){
 	ismoving =true;
 }
 
-PathFinder::PathFinder(int x_position, int y_position, int maze_width, int maze_height)
+PathFinder::PathFinder(int x_position, int y_position, int maze_width, int maze_height, bool is_auto)
 {
 	old_x = current_x = 20.0 + 10.0 * x_position;
 	old_y = current_y = 20.0 + 10.0 * y_position;
 	recursion_stack = new int[maze_width * maze_height * 4];	// size of worst case
 	stack_top = -1;
+
+	auto_mode = is_auto; // this will if the enemy is in auto mode or not
 
 	/* initialzing status factor */
 	ismoving = false;
@@ -38,27 +40,8 @@ PathFinder::PathFinder(int x_position, int y_position, int maze_width, int maze_
 }
 
 void PathFinder::lists(){
-	// glNewList( Arm, GL_COMPILE );
-	// 	glBegin( GL_POLYGON );
-	// 		glEdgeFlag( GL_TRUE );
-	// 		glVertex2f( 0, 0 );
-	// 		glVertex2f( 15, -10 );
-	// 		glVertex2f( 25, -25 );
-	// 		//glVertex2f( 0, 0 );
-	// 	glEnd();
-	// glEndList();
-
-	// glNewList( Leg, GL_COMPILE );
-	// 	glBegin( GL_POLYGON );
-	// 		glEdgeFlag( GL_TRUE );
-	// 		glVertex2f( 0, 0 );
-	// 		glVertex2f( 7, -28.5 );
-	// 		glVertex2f( 0, -28.5 );
-	// 		//glVertex2f( 0, 0 );
-	// 	glEnd();
-	// glEndList();
-
 	glNewList( Eye, GL_COMPILE );
+
 		glColor3f( 1, 1, 1 );
 		glBegin( GL_POLYGON );
 			glEdgeFlag( GL_TRUE );
@@ -66,17 +49,8 @@ void PathFinder::lists(){
 			glVertex2f( 10, -3 );
 			glVertex2f( 8, -10 );
 			glVertex2f( 2, -9 );
-			//glVertex2f( 0, 0 );
 		glEnd();
 
-		// glBegin( GL_POLYGON );
-		// 	glColor3f( 0, 0, 0 );
-		// 	glVertex2f( 6, -1.8 );
-		// 	glVertex2f( 8, -2.4 );
-		// 	glVertex2f( 8, -8 );
-		// 	glVertex2f( 6, -8 );
-		// 	//glVertex2f( 8, -2.4 );
-		// glEnd();
 	glEndList();
 
 	glNewList( Body, GL_COMPILE );
@@ -86,7 +60,6 @@ void PathFinder::lists(){
 			glVertex2f( 40, 0  );
 			glVertex2f( 30, 40 );
 			glVertex2f( 10, 40 );
-			//glVertex2f( 0, 0 );
 		glEnd();
 	glEndList();
 
@@ -101,16 +74,16 @@ void PathFinder::Move()
 	if( rolling_status == ROLL_FACT ){
 		switch(Dest) {
 		case UP:
-			current_y += movingfactor;//( walk_status >= 0 )? walk_status/3.0 : -walk_status/3.0;
+			current_y += movingfactor; //( walk_status >= 0 )? walk_status/3.0 : -walk_status/3.0;
 			break;
 		case DOWN:
-			current_y -= movingfactor;//( walk_status >= 0 )? walk_status/3.0 : -walk_status/3.0;
+			current_y -= movingfactor; //( walk_status >= 0 )? walk_status/3.0 : -walk_status/3.0;
 			break;
 		case LEFT:
-			current_x -= movingfactor;//( walk_status >= 0 )? walk_status/3.0 : -walk_status/3.0;
+			current_x -= movingfactor; //( walk_status >= 0 )? walk_status/3.0 : -walk_status/3.0;
 			break;
 		case RIGHT:
-			current_x += movingfactor;//( walk_status >= 0 )? walk_status/3.0 : -walk_status/3.0;
+			current_x += movingfactor; //( walk_status >= 0 )? walk_status/3.0 : -walk_status/3.0;
 			break;
 		}
 	}
@@ -142,53 +115,7 @@ void PathFinder::Draw()
 
 	// draw body
 	double rotateAngle = 0;
-	switch (init_dest) {
-	case LEFT:
-		rotateAngle = 0;
-		break;
-	case UP:
-		rotateAngle = 0;
-		break;
-	case DOWN:
-		rotateAngle = 0;
-		break;
-	}
-	if( rolling_status < ROLL_FACT ){
-		switch (init_dest) {
-		case LEFT:
-			if( Dest == RIGHT )
-				rotateAngle += 0;
-			else if( Dest == UP )
-				rotateAngle += 0;
-			else if( Dest == DOWN )
-				rotateAngle += 0;
-			break;
-		case RIGHT:
-			if( Dest == LEFT )
-				rotateAngle += 0;
-			else if( Dest == UP )
-				rotateAngle += 0;
-			else if( Dest == DOWN )
-				rotateAngle += 0;
-			break;
-		case UP:
-			if( Dest == DOWN )
-				rotateAngle += 0;
-			else if( Dest == LEFT )
-				rotateAngle += 0;
-			else if( Dest == RIGHT )
-				rotateAngle += 0;
-			break;
-		case DOWN:
-			if( Dest == LEFT )
-				rotateAngle += 0;
-			else if( Dest == UP )
-				rotateAngle += 0;
-			else if( Dest == RIGHT )
-				rotateAngle += 0;
-			break;
-		}
-	}
+	
 	glTranslatef(20,15,0);
 	glRotatef(rotateAngle, 0, 0, 1);
 	glTranslatef(-20, -15, 0);
@@ -199,56 +126,22 @@ void PathFinder::Draw()
 
 	/* draw eye */
 	glTranslatef( 23, 30, 0 );
-	if( eye_status >= 24 ) glScalef( 1, ( 30 - eye_status -1 )/6.0, 1);
+	if( eye_status >= 24 )
+		glScalef( 1, ( 30 - eye_status -1 )/6.0, 1);
 	glCallList( Eye );
 
-	/* draw arms */
-	glPopMatrix();
-	glPushMatrix();
-	glColor3f( 0.0, 0.0, 0.0 );
-	glTranslatef( 35, 20, 0 );
-	if( get_goal == true) glRotatef( 5 * goal_ceremony_status, 0, 0, 1);
-	else glRotatef(abs(walk_status * 5), 0, 0, 1);
-		//if( walk_status >= 0 ) glRotatef( 5*walk_status, 0, 0, 1 );
-		//else glRotatef( walk_status * -5 , 0, 0, 1 );
-	glCallList( Arm );
-
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef( 5, 20, 0 );
-	glRotatef( 180, 0 ,1, 0 );
-	if( get_goal == true) glRotatef( -5 * goal_ceremony_status , 0, 0, 1);
-	else glRotatef(abs(walk_status * 5), 0, 0, 1);
-		//if( walk_status >= 0 ) glRotatef( 5*walk_status, 0, 0, 1 );
-		//else glRotatef( walk_status * -5, 0, 0, 1 );
-	glCallList( Arm );
-
-	/* draw legs */
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef( 32, 0, 0 );
-	if( get_goal == false) glRotatef( abs(7 * walk_status), 0, 0, 1 );
-		//if( walk_status >= 0 ) glRotatef( 7 * walk_status, 0, 0, 1 );
-		//else glRotatef( walk_status * -7 , 0, 0, 1 );
-	glCallList( Leg );
-
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef( 8, 0, 0 );
-	glRotatef( 180, 0, 1, 0 );
-	if( get_goal == false) glRotatef( abs(7 * walk_status), 0, 0, 1 );
-		//if( walk_status >= 0 ) glRotatef( 7 * walk_status, 0, 0, 1 );
-		//else glRotatef( walk_status * -7 , 0, 0, 1 );
-	glCallList( Leg );
-	glPopMatrix();
 }
 
 void PathFinder::UpdateStatus() {
-	if (ismoving) Move();
+	if (ismoving)
+		Move();
 	if (rolling_status < ROLL_FACT) {
 		rolling_status++;
-		if (init_dest == Dest) rolling_status = ROLL_FACT;
-		if (rolling_status == ROLL_FACT) init_dest = Dest;
+		if (init_dest == Dest) 
+			rolling_status = ROLL_FACT;
+		if (rolling_status == ROLL_FACT) 
+			init_dest = Dest;
 	}
-	if(get_goal == true) goal_ceremony_status++;
+	if(get_goal == true) 
+		goal_ceremony_status++;
 }
