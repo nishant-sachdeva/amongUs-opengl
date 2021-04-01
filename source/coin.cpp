@@ -42,7 +42,7 @@ Coin::Coin(int x_position, int y_position, int maze_width, int maze_height, bool
 void Coin::lists(){
 	glNewList( Eye, GL_COMPILE );
 
-		glColor3f( 1, 1, 1 );
+		// glColor3f( 1, 1, 1 );
 		glBegin( GL_POLYGON );
 			glEdgeFlag( GL_TRUE );
 			glVertex2f( 0, 0 );

@@ -31,6 +31,7 @@ static int state = 0;		// current state(making maze, finding path or end)
 
 static PathFinder* gb_finder = NULL;	// path finder object
 static Coin* gl_coin = NULL;
+static Coin* gl_fire = NULL;
 // static PathFinder* coins = NULL;	// path finder object // we need an array of these, but I dunno how to make that happen
 // using namespace std;
 // std::vector<Coin*> coins;
@@ -39,6 +40,7 @@ static PathFinder* fire = NULL;	// path finder object // we need an array of the
 
 static PathFinder* enemy = NULL;	// path finder object  // just one is enough. For now, draw it up. movement, we can see later 
 static vaporise* vap = NULL;
+// static Fire* gl_fire = NULL;
 
 static bool Over_view = true;
 static bool autoMode = false;
@@ -343,20 +345,16 @@ void display()
 		vap->Draw();		
 	}
 
-	// // drawing coins
-	// for ( int i = 0 ; i<5 ; i++)
-	// {
-	// 	if(coins[i] != NULL)
-	// 	{
-	// 		const double SHIFTFACTOR_X = -10.0;
-	// 		const double SHIFTFACTOR_Y = -11.5;
+	if(gl_fire != NULL)
+	{
+		const double SHIFTFACTOR_X = -10.0;
+		const double SHIFTFACTOR_Y = -11.5;
 
-	// 		glLoadIdentity();
-	// 		glTranslatef(coins[i]->CurrentX() + SHIFTFACTOR_X, coins[i]->CurrentY() + SHIFTFACTOR_Y, 0);
-	// 		glScalef(0.1, 0.1, 1);
-	// 		coins[i]->Draw();			
-	// 	}
-	// }
+		glLoadIdentity();
+		glTranslatef(gl_fire->CurrentX() + SHIFTFACTOR_X, gl_fire->CurrentY() + SHIFTFACTOR_Y, 0);
+		glScalef(0.1, 0.1, 1);
+		gl_fire->Draw();		
+	}
 
 	glutSwapBuffers();
 }
@@ -384,6 +382,9 @@ void path_finding()
 	static vaporise vap_button(width/2, height/2, ::width, ::height, false);
 
 	static Coin coin(rand()%width, rand()%height, ::width, ::height, false);
+	
+	static Coin fire(height/3, width/3, ::width, ::height, false);
+
 
 	// now spawn 5 coins
 
@@ -413,6 +414,10 @@ void path_finding()
 	if (gl_coin == NULL) {
 		gl_coin = &coin;	// to use in other functions
 		coin.SetBodyColor(1.0, 0.5,0.5);
+	}
+	if (gl_fire == NULL) {
+		gl_fire = &fire;	// to use in other functions
+		fire.SetBodyColor(0, 0,0);
 	}
 
 	if(enemy == NULL){
