@@ -23,10 +23,10 @@ static int starting_x, starting_y;	// starting position
 static int goal_x, goal_y;	// position of goal
 static double R, G, B;		// the color of background
 static int *chosen;		// the pointer of array of connected cells
-static bool work;			// making maze(true) or pause(false)
+static bool work = true;			// making maze(true) or pause(false)
 static int state = 0;		// current state(making maze, finding path or end)
 static PathFinder* gb_finder = NULL;	// path finder object
-static bool Over_view = false;
+static bool Over_view = true;
 static bool autoMode = false;
 static int userInputLastDirection = -1;
 
@@ -90,10 +90,14 @@ void draw_maze(){
 		x = i % width;
 		y = i / width;
 
-		if( cell[i].road[right] == true )	erase_wall( x, y, right );
-		if( cell[i].road[up] ==true )		erase_wall( x, y, up );
-		if( cell[i].road[down] == true )	erase_wall( x, y, down );
-		if( cell[i].road[left] ==true )		erase_wall( x, y, left );
+		if( cell[i].road[right] == true )
+			erase_wall( x, y, right );
+		if( cell[i].road[up] ==true )
+			erase_wall( x, y, up );
+		if( cell[i].road[down] == true )
+			erase_wall( x, y, down );
+		if( cell[i].road[left] ==true )
+			erase_wall( x, y, left );
 	}
 }
 
@@ -226,6 +230,7 @@ void gen_maze(){
 			break;
 		}
 	}
+	draw_maze();
 }
 
 void reshape( int w, int h ){
@@ -299,33 +304,9 @@ void keyFunc( unsigned char key, int x, int y ){
 	case ' ':
 		work = !work;
 		break;
-	case '-':
-		if (timefactor < 50) timefactor += 5;	// work faster
-		break;
-	case '+':
-		timefactor -= 5;	// work slower
-		if( timefactor < 0) timefactor = 0;
-		break;
-	case 0x7f:	// initialzing all factors, (delete key)
-		Over_view = false;
-		ViewZoomFactor = 20;
-		ViewChange_x = 0;
-		ViewChange_y = 0;
-		timefactor = INIT_TIMEFACTOR;
-		reviewpoint();
-		display();
-		break;
-	case 'w':
-		if (ViewChange_y < height * 5) ViewChange_y += 5;	// scroll the maze up
-		break;
-	case 'a':
-		if (ViewChange_x > width * -5) ViewChange_x -= 5;	// scroll the maze left
-		break;
-	case 's':
-		if (ViewChange_y > height * -5) ViewChange_y -= 5;	// scroll the maze down
-		break;
-	case 'd':
-		if (ViewChange_x < width * 5) ViewChange_x += 5;	// scroll the maze right
+
+	case 'q':
+		exit(0);
 		break;
 	}
 }
@@ -473,12 +454,12 @@ void specialKeyFunc( int key, int x, int y ){
 	case GLUT_KEY_UP:
 		userInputLastDirection = up;
 		break;
-	case GLUT_KEY_PAGE_DOWN:
-		if (ViewZoomFactor < ((width>height)? width * 5 : height * 5)) ViewZoomFactor += 5;	// zoom in
-		break;
-	case GLUT_KEY_PAGE_UP:
-		if (ViewZoomFactor > 0) ViewZoomFactor -= 5;	// zoom out
-		break;
+	// case GLUT_KEY_PAGE_DOWN:
+	// 	if (ViewZoomFactor < ((width>height)? width * 5 : height * 5)) ViewZoomFactor += 5;	// zoom in
+	// 	break;
+	// case GLUT_KEY_PAGE_UP:
+	// 	if (ViewZoomFactor > 0) ViewZoomFactor -= 5;	// zoom out
+	// 	break;
 	case GLUT_KEY_INSERT:	// initializing viewing
 		ViewZoomFactor = 20;
 		ViewChange_x = 0;
@@ -489,6 +470,7 @@ void specialKeyFunc( int key, int x, int y ){
 		break;
 	case GLUT_KEY_END:
 		Over_view = false;	// zoomed maze
+		// this is being used as the lighting function
 		break;
 	}
 
@@ -531,12 +513,28 @@ void reviewpoint()
 	glLoadIdentity();
 }
 
+void display_welcome_message()
+{
+
+	char string[] = "Press Space to Start" ;
+	char *c;
+	glRasterPos2f(0., 0.);
+	for (c=string; *c != '\0'; c++)
+	{
+		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *c);
+  	}
+}
+
 void idle()
 {
-	if( work == false ) return;
+	if( work == false ) 
+		// draw_maze();
+		return;
+	
 	switch (state) {
 	case 0:
 		gen_maze();
+		draw_maze();
 		break;
 	case 1:
 		path_finding();
@@ -555,43 +553,34 @@ void idle()
 int main( int argc, char ** argv ){
 	using namespace std;
 
-	if (argc > 1) {
-		if (strcmp(argv[1], "--auto") == 0) autoMode = true;
-		else if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
-			cout << "usage: " << argv[0] << " [--auto]" << endl;
-			return 0;
-		}
-	}
+	// if (argc > 1) {
+	// 	if (strcmp(argv[1], "--auto") == 0) 
+	// 		autoMode = true;
+	// 	else if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+	// 		cout << "usage: " << argv[0] << " [--auto]" << endl;
+	// 		return 0;
+	// 	}
+	// }
 
 	srand( ( unsigned )time( NULL ) );
 
-	/* input the size of the maze */
-	while(1) {
-		cout<<"please input the size of maze( width, 5 ~ 50 )"<<endl;
-		cin>>width;
-		if( width > 50 || width < 5 )	cout<<"out of range!"<<endl;
-		else break;
-	}
-	while(1) {
-		cout<<"please input the size of maze( height, 5 ~ 50 )"<<endl;
-		cin>>height;
-		if( height > 50 || height < 5 )	cout<<"out of range!"<<endl;
-		else break;
-	}
+
+	height = 10;
+	width = 10;
 
 	/* help message */
 	cout << endl;
-	cout << "Space bar : start/stop working" << endl;
-	cout << " + key    : increasing speed" << endl;
-	cout << " - key    : decreasing speed" << endl;
-	cout << "w a s d   : scroll the maze" << endl;
+	// cout << "Space bar : start/stop working" << endl;
+	// cout << " + key    : increasing speed" << endl;
+	// cout << " - key    : decreasing speed" << endl;
+	// cout << "w a s d   : scroll the maze" << endl;
 	cout << "Arrow key : move the character" << endl;
-	cout << "Page Up   : Zoom in" << endl;
-	cout << "Page Down : Zoom out" << endl;
-	cout << "Home key  : Over view the maze" << endl;
-	cout << "End key   : closed view the maze" << endl;
-	cout << "Insert key: initialize zoom and scroll" << endl;
-	cout << "Del key   : initialize all(zoom, scroll, speed)" << endl;
+	// cout << "Page Up   : Zoom in" << endl;
+	// cout << "Page Down : Zoom out" << endl;
+	// // cout << "Home key  : Over view the maze" << endl;
+	cout << "End key   : Lighting Mode :: Only nearby cells visible" << endl;
+	// cout << "Insert key: initialize zoom and scroll" << endl;
+	// cout << "Del key   : initialize all(zoom, scroll, speed)" << endl;
 	cout << endl << "Check the newly created window!" << endl;
 
 	cell = new Cell[width * height];
@@ -608,9 +597,9 @@ int main( int argc, char ** argv ){
 
 	glutInit( &argc, argv );
 	glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGB );
-	glutInitWindowSize ( 500, 500 );
+	glutInitWindowSize ( 700, 700 );
 	glutInitWindowPosition (100, 100);
-	glutCreateWindow ("miro");
+	glutCreateWindow ("Assignment 1");
 	glutReshapeFunc( reshape );
 	glutDisplayFunc( display );
 	glutIdleFunc( idle );

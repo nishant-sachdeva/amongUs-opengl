@@ -32,12 +32,15 @@ public:
 	void Stack_Push(int dest) { recursion_stack[++stack_top] = dest; }
 	int Stack_Pop() { return (stack_top == -1)? recursion_stack[stack_top+1]: recursion_stack[stack_top--]; }
 	int Stack_Top() { return recursion_stack[stack_top]; }
+
 private:
 	/* position and direction for path finding */
 	double current_x;
 	double current_y;
+
 	double old_x;
 	double old_y;
+	
 	int Dest;
 	int init_dest;
 	bool get_goal;

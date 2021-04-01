@@ -38,25 +38,25 @@ PathFinder::PathFinder(int x_position, int y_position, int maze_width, int maze_
 }
 
 void PathFinder::lists(){
-	glNewList( Arm, GL_COMPILE );
-		glBegin( GL_POLYGON );
-			glEdgeFlag( GL_TRUE );
-			glVertex2f( 0, 0 );
-			glVertex2f( 15, -10 );
-			glVertex2f( 25, -25 );
-			//glVertex2f( 0, 0 );
-		glEnd();
-	glEndList();
+	// glNewList( Arm, GL_COMPILE );
+	// 	glBegin( GL_POLYGON );
+	// 		glEdgeFlag( GL_TRUE );
+	// 		glVertex2f( 0, 0 );
+	// 		glVertex2f( 15, -10 );
+	// 		glVertex2f( 25, -25 );
+	// 		//glVertex2f( 0, 0 );
+	// 	glEnd();
+	// glEndList();
 
-	glNewList( Leg, GL_COMPILE );
-		glBegin( GL_POLYGON );
-			glEdgeFlag( GL_TRUE );
-			glVertex2f( 0, 0 );
-			glVertex2f( 7, -28.5 );
-			glVertex2f( 0, -28.5 );
-			//glVertex2f( 0, 0 );
-		glEnd();
-	glEndList();
+	// glNewList( Leg, GL_COMPILE );
+	// 	glBegin( GL_POLYGON );
+	// 		glEdgeFlag( GL_TRUE );
+	// 		glVertex2f( 0, 0 );
+	// 		glVertex2f( 7, -28.5 );
+	// 		glVertex2f( 0, -28.5 );
+	// 		//glVertex2f( 0, 0 );
+	// 	glEnd();
+	// glEndList();
 
 	glNewList( Eye, GL_COMPILE );
 		glColor3f( 1, 1, 1 );
@@ -69,14 +69,14 @@ void PathFinder::lists(){
 			//glVertex2f( 0, 0 );
 		glEnd();
 
-		glBegin( GL_POLYGON );
-			glColor3f( 0, 0, 0 );
-			glVertex2f( 6, -1.8 );
-			glVertex2f( 8, -2.4 );
-			glVertex2f( 8, -8 );
-			glVertex2f( 6, -8 );
-			//glVertex2f( 8, -2.4 );
-		glEnd();
+		// glBegin( GL_POLYGON );
+		// 	glColor3f( 0, 0, 0 );
+		// 	glVertex2f( 6, -1.8 );
+		// 	glVertex2f( 8, -2.4 );
+		// 	glVertex2f( 8, -8 );
+		// 	glVertex2f( 6, -8 );
+		// 	//glVertex2f( 8, -2.4 );
+		// glEnd();
 	glEndList();
 
 	glNewList( Body, GL_COMPILE );
@@ -144,48 +144,48 @@ void PathFinder::Draw()
 	double rotateAngle = 0;
 	switch (init_dest) {
 	case LEFT:
-		rotateAngle = 180.0;
+		rotateAngle = 0;
 		break;
 	case UP:
-		rotateAngle = 90.0;
+		rotateAngle = 0;
 		break;
 	case DOWN:
-		rotateAngle = -90.0;
+		rotateAngle = 0;
 		break;
 	}
 	if( rolling_status < ROLL_FACT ){
 		switch (init_dest) {
 		case LEFT:
 			if( Dest == RIGHT )
-				rotateAngle += 180.0/ROLL_FACT*rolling_status;
+				rotateAngle += 0;
 			else if( Dest == UP )
-				rotateAngle += -90.0/ROLL_FACT*rolling_status;
+				rotateAngle += 0;
 			else if( Dest == DOWN )
-				rotateAngle += 90.0/ROLL_FACT*rolling_status;
+				rotateAngle += 0;
 			break;
 		case RIGHT:
 			if( Dest == LEFT )
-				rotateAngle += 180.0/ROLL_FACT*rolling_status;
+				rotateAngle += 0;
 			else if( Dest == UP )
-				rotateAngle += 90.0/ROLL_FACT*rolling_status;
+				rotateAngle += 0;
 			else if( Dest == DOWN )
-				rotateAngle += -90.0/ROLL_FACT*rolling_status;
+				rotateAngle += 0;
 			break;
 		case UP:
 			if( Dest == DOWN )
-				rotateAngle += 180.0/ROLL_FACT*rolling_status;
+				rotateAngle += 0;
 			else if( Dest == LEFT )
-				rotateAngle += 90.0/ROLL_FACT*rolling_status;
+				rotateAngle += 0;
 			else if( Dest == RIGHT )
-				rotateAngle += -90.0/ROLL_FACT*rolling_status;
+				rotateAngle += 0;
 			break;
 		case DOWN:
 			if( Dest == LEFT )
-				rotateAngle += -90.0/ROLL_FACT*rolling_status;
+				rotateAngle += 0;
 			else if( Dest == UP )
-				rotateAngle += 180.0/ROLL_FACT*rolling_status;
+				rotateAngle += 0;
 			else if( Dest == RIGHT )
-				rotateAngle += 90.0/ROLL_FACT*rolling_status;
+				rotateAngle += 0;
 			break;
 		}
 	}
