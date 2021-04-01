@@ -1,1 +1,0 @@
-/usr/bin/c++ -rdynamic CMakeFiles/ass1.dir/source/miro.cpp.o CMakeFiles/ass1.dir/source/pathfinder.cpp.o -o ass1  libraries/glfw/src/libglfw3.a libglad.a -ldl -lGL -lGLEW -lGLU -lGL -lpthread -lrt -lm -ldl -lGLEW -lGLU 
