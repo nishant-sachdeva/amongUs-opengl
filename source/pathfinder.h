@@ -65,4 +65,97 @@ private:
 	int stack_top;
 };
 
+
+class Coin {
+public:
+	Coin(int x_position, int y_position, int maze_width, int maze_height, bool is_auto);
+	~Coin() { delete recursion_stack; }
+
+	void SetBodyColor(double r, double g, double b)	{ bodyColorR = r; bodyColorG = g, bodyColorB = b; }
+	void Draw();
+
+	double CurrentX() { return current_x; }	// return x position of the finder
+	double CurrentY() { return current_y; }	// return y position of the finder
+
+private:
+	/* position and direction for path finding */
+	double current_x;
+	double current_y;
+
+	double old_x;
+	double old_y;
+	int* recursion_stack;
+	int stack_top;
+
+	/* animation */
+	void lists();	// call list of the finder
+	double bodyColorR;
+	double bodyColorG;
+	double bodyColorB;
+};
+
+// class vaporise {
+// public:
+// 	vaporise(int x_position, int y_position, int maze_width, int maze_height, bool is_auto);
+// 	~vaporise() { delete recursion_stack; }
+
+// 	void SetBodyColor(double r, double g, double b)	{ bodyColorR = r; bodyColorG = g, bodyColorB = b; }
+// 	void Draw();
+
+// 	double CurrentX() { return current_x; }	// return x position of the finder
+// 	double CurrentY() { return current_y; }	// return y position of the finder
+
+// private:
+// 	/* position and direction for path finding */
+// 	double current_x;
+// 	double current_y;
+
+// 	double old_x;
+// 	double old_y;
+// 	int* recursion_stack;
+// 	int stack_top;
+// 	/* animation */
+// 	void lists();	// call list of the finder
+// 	double bodyColorR;
+// 	double bodyColorG;
+// 	double bodyColorB;
+// };
+
+
+
+
+// class fire {
+// public:
+// 	fire(int x_position, int y_position, int maze_width, int maze_height, bool is_auto);
+// 	~fire() { delete recursion_stack; }
+
+// 	void SetBodyColor(double r, double g, double b)	{ bodyColorR = r; bodyColorG = g, bodyColorB = b; }
+// 	void Draw();
+
+// 	double CurrentX() { return current_x; }	// return x position of the finder
+// 	double CurrentY() { return current_y; }	// return y position of the finder
+
+// private:
+// 	/* position and direction for path finding */
+// 	double current_x;
+// 	double current_y;
+
+// 	double old_x;
+// 	double old_y;
+	
+// 	int Dest;
+// 	int init_dest;
+// 	bool get_goal;
+// 	int* recursion_stack;
+// 	int stack_top;
+// 	/* animation */
+// 	void lists();	// call list of the finder
+// 	bool ismoving;
+// 	double degree_7;	// a degree of 7, used calculating movement of one frame of animation
+// 	double bodyColorR;
+// 	double bodyColorG;
+// 	double bodyColorB;
+
+// };
+
 #endif

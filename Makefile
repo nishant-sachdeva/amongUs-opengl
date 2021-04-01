@@ -1,6 +1,6 @@
 UNAME := $(shell uname -s)
 CC = g++
-OBJ = source/miro.o source/pathfinder.o
+OBJ = source/miro.o source/pathfinder.o source/coin.o source/fire.o source/vaporiser.o
 LDFLAGS = -lGL -lGLU -lglut
 
 # Mac OS

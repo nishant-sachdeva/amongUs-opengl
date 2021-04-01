@@ -11,6 +11,7 @@
 #include <sys/time.h>
 #include <cstring>
 
+#include<bits/stdc++.h>
 #include "miro.h"
 #include "pathfinder.h"
 
@@ -21,17 +22,30 @@ static Cell *cell;
 static int width, height;	// the size of maze
 static int starting_x, starting_y;	// starting position
 static int goal_x, goal_y;	// position of goal
+
 static double R, G, B;		// the color of background
 static int *chosen;		// the pointer of array of connected cells
+
 static bool work = true;			// making maze(true) or pause(false)
 static int state = 0;		// current state(making maze, finding path or end)
+
 static PathFinder* gb_finder = NULL;	// path finder object
+static PathFinder* vapor_button = NULL;	// path finder object
+// static PathFinder* coins = NULL;	// path finder object // we need an array of these, but I dunno how to make that happen
+using namespace std;
+std::vector<Coin*> coins;
+
+static PathFinder* fire = NULL;	// path finder object // we need an array of these too, but I dunno how to make that happen
+
+static PathFinder* enemy = NULL;	// path finder object  // just one is enough. For now, draw it up. movement, we can see later 
+
 static bool Over_view = true;
 static bool autoMode = false;
 static int userInputLastDirection = -1;
 
 static int view_Left, view_Right, view_Bottom, view_Up;	//view points
 static int ViewZoomFactor;
+
 static int ViewChange_x, ViewChange_y;
 static int timefactor;		// controls duration
 
@@ -295,6 +309,32 @@ void display()
 		gb_finder->Draw();
 	}
 
+	if(enemy != NULL)
+	{
+		const double SHIFTFACTOR_X = -10.0;
+		const double SHIFTFACTOR_Y = -11.5;
+
+		glLoadIdentity();
+		glTranslatef(enemy->CurrentX() + SHIFTFACTOR_X, enemy->CurrentY() + SHIFTFACTOR_Y, 0);
+		glScalef(0.1, 0.1, 1);
+		enemy->Draw();	
+	}
+
+	// // drawing coins
+	// for ( int i = 0 ; i<5 ; i++)
+	// {
+	// 	if(coins[i] != NULL)
+	// 	{
+	// 		const double SHIFTFACTOR_X = -10.0;
+	// 		const double SHIFTFACTOR_Y = -11.5;
+
+	// 		glLoadIdentity();
+	// 		glTranslatef(coins[i]->CurrentX() + SHIFTFACTOR_X, coins[i]->CurrentY() + SHIFTFACTOR_Y, 0);
+	// 		glScalef(0.1, 0.1, 1);
+	// 		coins[i]->Draw();			
+	// 	}
+	// }
+
 	glutSwapBuffers();
 }
 
@@ -316,9 +356,16 @@ void path_finding()
 	static int oldTime;
 	int currTime = timeGetTime();
 	static PathFinder finder(::starting_x, ::starting_y, ::width, ::height, false);
+	static PathFinder enemy_body(::starting_x-1, ::starting_y-3, ::width, ::height, false);
 
-	// static PathFinder enemy((2*rand())%width , (2*rand())%height , ::width, ::height, true);
-	
+	// now spawn 5 coins
+
+	// for (int i = 0 ; i<5 ; i++){
+	// 	static Coin coin_i = Coin(rand()%width, rand()%height, ::width, ::height, false);
+	// 	coins.push_back(&coin_i);
+	// 	coin_i.SetBodyColor(R/2, G/2, B/2);
+	// }
+
 	static int x = ::starting_x;
 	static int y = ::starting_y;
 
@@ -330,6 +377,11 @@ void path_finding()
 	if (gb_finder == NULL) {
 		gb_finder = &finder;	// to use in other functions
 		finder.SetBodyColor(1.0-R, 1.0-G, 1.0-B);
+	}
+
+	if(enemy == NULL){
+		enemy = &enemy_body;
+		enemy_body.SetBodyColor(R/2, G/2, B/2) ;
 	}
 
 	finder.UpdateStatus();
@@ -380,6 +432,14 @@ void path_finding()
 		userInputLastDirection = -1;
 			
 	}
+
+	if (x == enemy->CurrentX() and y == enemy->CurrentY())
+	{
+		// game is over here
+		// now try and ensure that you are able to move the enemy anywhere
+		exit(0);
+
+	}
 }
 
 void goal_ceremony()
@@ -410,17 +470,7 @@ void specialKeyFunc( int key, int x, int y ){
 	case GLUT_KEY_UP:
 		userInputLastDirection = up;
 		break;
-	// case GLUT_KEY_PAGE_DOWN:
-	// 	if (ViewZoomFactor < ((width>height)? width * 5 : height * 5)) ViewZoomFactor += 5;	// zoom in
-	// 	break;
-	// case GLUT_KEY_PAGE_UP:
-	// 	if (ViewZoomFactor > 0) ViewZoomFactor -= 5;	// zoom out
-	// 	break;
-	case GLUT_KEY_INSERT:	// initializing viewing
-		ViewZoomFactor = 20;
-		ViewChange_x = 0;
-		ViewChange_y = 0;
-		break;
+	
 	case GLUT_KEY_HOME:
 		Over_view = true;	// set the whole maze can be seen
 		break;
